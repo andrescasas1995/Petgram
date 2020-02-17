@@ -1,18 +1,29 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Category } from '../Category'
 import { List, Item } from './styles'
 
-export const ListOfCategories = () => {
-  const [categories, setCategories] = useState([])
-  const [showFixed, setShowFixed] = useState(false)
+function useCategoriesData() {
+  const [categories, setCategories] = useState(Array(1).fill({}))
+  const [loading, setLoading] = useState(true)
 
-  useEffect(function () {
-        fetch('https://petgram-server-acasas.now.sh/categories')
-        .then(res => res.json())
-        .then(response => {
-          setCategories(response)
+  useEffect(function () {        
+    setLoading(true)
+    setTimeout(() => {
+      fetch('https://petgram-server-acasas.now.sh/categories')
+        .then(rslt => rslt.json())
+        .then(json => {
+          setCategories(json)
+          setLoading(false)
         })
+    }, 2000)
     }, [])
+
+    return { categories, loading }
+}
+
+export const ListOfCategories = () => {
+  const { categories, loading } = useCategoriesData();
+  const [showFixed, setShowFixed] = useState(false)
   
     useEffect(function () {
       const onScroll = e => {
@@ -26,17 +37,23 @@ export const ListOfCategories = () => {
     }, [showFixed])
   
     const renderList = (fixed) => (
-      <List className={fixed ? 'fixed' : ''}>
+      <List fixed={fixed}>
         {
-          categories.map(category => <Item key={category.id}><Category {...category} /></Item>)
+          categories.map((category, i) => {
+            return (
+              <Item key={category.id || i}>
+                <Category {...category} loading={loading.toString()} />
+              </Item>
+            )
+          })
         }
       </List>
     )
   
     return (
-      <Fragment>
-        {renderList()}
-        {showFixed && renderList(true)}
-      </Fragment>
+      <>
+        {renderList(false, loading)}
+        {showFixed && renderList(true, loading)}
+      </>
     )
   }

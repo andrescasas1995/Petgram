@@ -1,5 +1,9 @@
-import styled from 'styled-components'
-import { fadeIn } from "../styles/animation";
+import styled, { css } from 'styled-components'
+import { fadeIn } from "../../styles/animation";
+
+export const Article = styled.article`
+  min-height: 200px;
+`
 
 export const ImgWrapper = styled.div`
   border-radius: 10px;
@@ -25,7 +29,17 @@ export const Button = styled.button`
   display: flex;
   align-items: center;
   padding-top: 8px;
+	width: 100%;
+	padding: 015px;
+	border-bottom-right-radius: 10px;
+	border-bottom-left-radius: 10px;
   & svg {
     margin-right: 4px;
+		color: #d1d1d1;
+    width: 23px;
+    ${props => props.liked && css`
+        ${fadeIn()}
+        color: #1195AA;
+    `}
   }
 `
